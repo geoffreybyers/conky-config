@@ -1,0 +1,8 @@
+# OS / editor noise
+*.swp
+*.swo
+*~
+.DS_Store
+
+# screenshots scratch
+*.bak

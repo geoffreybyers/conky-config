@@ -1,0 +1,145 @@
+-- vim: ts=4 sw=4 noet ai cindent syntax=lua
+--
+-- conky-config (multi-GPU variant, 3x NVIDIA)
+-- ----------------------------------------------------------------------------
+-- Built on : Ubuntu 24.04 + GNOME (Wayland/X11), conky 1.19.6
+-- Hardware : AMD Ryzen, 3x NVIDIA GPUs (Titan X + 2x RTX 2080 Ti)
+-- Deps     : conky-all, lm-sensors, nvidia-utils (nvidia-smi), curl
+--
+-- CUSTOMISE THESE BEFORE USE:
+--   * xinerama_head     → which monitor (0, 1, 2…). See `xrandr`.
+--   * Network interface → replace every 'enp41s0' below with yours.
+--                         Find it via: ip -br link
+--   * CPU temp sensor   → tweak the awk pattern under "Temperature" if your
+--                         CPU is Intel (use 'Package id 0') rather than AMD
+--                         (which uses 'Tctl'). Run `sensors` to check.
+--   * GPU count         → this file assumes 3 NVIDIA GPUs. See the other
+--                         variants (conkyrc.single-gpu, conkyrc.minimal).
+--   * Distro lines      → the System block uses lsb_release and
+--                         `gnome-shell --version`. Comment those out if you
+--                         are not on Ubuntu / GNOME.
+-- ----------------------------------------------------------------------------
+
+conky.config = {
+    -- Window
+    own_window = true,
+    own_window_type = 'desktop',
+    own_window_transparent = true,
+    own_window_colour = '000000',
+    own_window_argb_visual = true,
+    own_window_argb_value = 0,
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+
+    -- Monitor selection (0 = primary). `xrandr` lists heads.
+    xinerama_head = 0,
+
+    -- Positioning
+    alignment = 'top_right',
+    gap_x = 20,
+    gap_y = 50,
+    minimum_width = 260,
+    maximum_width = 260,
+
+    -- Graphics & layout
+    background = false,
+    double_buffer = true,
+    draw_borders = false,
+    draw_graph_borders = true,
+    draw_outline = false,
+    draw_shades = false,
+    show_graph_scale = false,
+    show_graph_range = false,
+    extra_newline = false,
+
+    -- Text & fonts
+    use_xft = true,
+    xftalpha = 1.0,
+    font = 'Ubuntu Mono:size=10',
+    uppercase = false,
+
+    -- Colors
+    default_color = 'white',
+    default_outline_color = 'white',
+    default_shade_color = 'white',
+    color0 = 'white',
+    color1 = 'EAEAEA',
+    color2 = 'white',
+    color3 = 'grey',
+
+    -- Updates
+    update_interval = 1.0,
+    cpu_avg_samples = 2,
+    net_avg_samples = 2,
+    no_buffers = true,
+    out_to_console = false,
+    out_to_stderr = false,
+}
+
+conky.text = [[
+# SYSTEM
+${color1}System $alignr $sysname
+${color1}Kernel $alignr $kernel
+${color1}Distro $alignr ${execi 86400 lsb_release -ds 2>/dev/null | sed 's/"//g'}
+${color1}Desktop $alignr ${execi 86400 gnome-shell --version 2>/dev/null | awk '{print $3}'}
+${color1}Session $alignr ${execi 86400 printenv XDG_SESSION_TYPE}
+${color1}Uptime $alignr $uptime
+
+# CPU
+${color1}${execi 86400 grep -m 1 'model name' /proc/cpuinfo | cut -d: -f2 | xargs}
+${color1}Architecture $alignr $machine
+${color1}Frequency $alignr $freq_g GHz
+${color1}Temperature $alignr ${execi 5 sensors | awk '/Tctl/ {gsub(/\+|°C/,"",$2); print $2; exit} /Package id 0/ {gsub(/\+|°C/,"",$4); print $4; exit}'}°C
+${color1}Load $alignr ${cpu cpu0}%
+${color1}${cpubar cpu0 5,}
+${color1}${cpugraph 30,}
+
+# NVIDIA
+${color1}Driver $alignr ${execi 300 nvidia-smi --query-gpu=driver_version --format=csv,noheader,nounits --id=0}
+${color1}CUDA $alignr ${execi 300 nvidia-smi | awk '/CUDA Version/ {print $9}'}
+
+# GPU 1
+${color1}${execi 300 nvidia-smi --query-gpu=name --format=csv,noheader,nounits --id=0} $alignr GPU 1
+${color1}Temp $alignr ${execi 10 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits --id=0}°C
+${color1}Power $alignr ${execi 10 nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits --id=0} W
+${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits --id=0}%
+
+# GPU 2
+${color1}${execi 300 nvidia-smi --query-gpu=name --format=csv,noheader,nounits --id=1} $alignr GPU 2
+${color1}Temp $alignr ${execi 10 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits --id=1}°C
+${color1}Power $alignr ${execi 10 nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits --id=1} W
+${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits --id=1}%
+
+# GPU 3
+${color1}${execi 300 nvidia-smi --query-gpu=name --format=csv,noheader,nounits --id=2} $alignr GPU 3
+${color1}Temp $alignr ${execi 10 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits --id=2}°C
+${color1}Power $alignr ${execi 10 nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits --id=2} W
+${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits --id=2}%
+
+# RAM
+${color1}RAM $alignc ${mem} / ${memmax} $alignr ${memperc}%
+${color1}${membar 5,}
+${color1}${memgraph 30,}
+
+# STORAGE
+${color2}STORAGE
+${color1}Root $alignc ${fs_used /} / ${fs_size /} ${alignr}${fs_used_perc /}%
+${color1}${fs_bar 5 /}
+
+# PROCESSES
+${color2}TOP PROCESSES
+${color1}${top name 1} $alignr ${top pid 1} ${top cpu 1}% ${top mem_res 1}
+${color1}${top name 2} $alignr ${top pid 2} ${top cpu 2}% ${top mem_res 2}
+${color1}${top name 3} $alignr ${top pid 3} ${top cpu 3}% ${top mem_res 3}
+${color1}${top name 4} $alignr ${top pid 4} ${top cpu 4}% ${top mem_res 4}
+${color1}${top name 5} $alignr ${top pid 5} ${top cpu 5}% ${top mem_res 5}
+
+# NETWORK
+${color2}NETWORK
+${color1}Download ${alignr}${downspeedf enp41s0} KiB/s
+${downspeedgraph enp41s0 30,}
+${color1}Upload ${alignr}${upspeedf enp41s0} KiB/s
+${upspeedgraph enp41s0 30,}
+${color1}Local IP${alignr}${addrs enp41s0}
+${color1}Public IP${alignr}${execi 3600 curl -s --connect-timeout 5 http://checkip.amazonaws.com}
+${color1}Location${alignr}${execi 3600 curl -s --connect-timeout 5 ipinfo.io/city}
+]]
