@@ -10,7 +10,7 @@ Three variants are included:
     conkyrc.single-gpu  single NVIDIA GPU
     conkyrc.minimal     no GPU section at all
 
-> _Screenshot coming soon._
+> ![screenshot](screenshot.png)
 
 ## Dependencies
 
