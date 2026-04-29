@@ -101,19 +101,13 @@ ${color1}CUDA $alignr ${execi 300 nvidia-smi | awk '/CUDA Version/ {print $9}'}
 ${color1}${execi 300 nvidia-smi --query-gpu=name --format=csv,noheader,nounits --id=0} $alignr GPU 1
 ${color1}Temp $alignr ${execi 10 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits --id=0}°C
 ${color1}Power $alignr ${execi 10 nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits --id=0} W
-${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits --id=0}%
+${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits --id=0 | tr -d ',' | awk '$0=$1" / "$2" MiB ("int($1*100/$2)"%)"'}
 
 # GPU 2
 ${color1}${execi 300 nvidia-smi --query-gpu=name --format=csv,noheader,nounits --id=1} $alignr GPU 2
 ${color1}Temp $alignr ${execi 10 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits --id=1}°C
 ${color1}Power $alignr ${execi 10 nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits --id=1} W
-${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits --id=1}%
-
-# GPU 3
-${color1}${execi 300 nvidia-smi --query-gpu=name --format=csv,noheader,nounits --id=2} $alignr GPU 3
-${color1}Temp $alignr ${execi 10 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits --id=2}°C
-${color1}Power $alignr ${execi 10 nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits --id=2} W
-${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=utilization.memory --format=csv,noheader,nounits --id=2}%
+${color1}Memory $alignr ${execi 10 nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits --id=1 | tr -d ',' | awk '$0=$1" / "$2" MiB ("int($1*100/$2)"%)"'}
 
 # RAM
 ${color1}RAM $alignc ${mem} / ${memmax} $alignr ${memperc}%
