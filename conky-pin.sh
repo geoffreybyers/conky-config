@@ -13,7 +13,8 @@
 set -u
 
 TARGET_OUTPUT="${CONKY_TARGET_OUTPUT:-DP-2}"
-STARTUP_DELAY="${CONKY_STARTUP_DELAY:-30}"
+STARTUP_DELAY="${CONKY_STARTUP_DELAY:-60}"
+SETTLE_RECHECK_DELAY="${CONKY_SETTLE_RECHECK_DELAY:-30}"
 
 find_head_index() {
     xrandr --listmonitors 2>/dev/null | awk -v t="$TARGET_OUTPUT" '
@@ -35,6 +36,15 @@ restart_conky() {
 
 sleep "$STARTUP_DELAY"
 restart_conky
+
+# Belt-and-suspenders: Mutter sometimes settles the layout after our
+# initial query without firing a final MonitorsChanged on the bus, leaving
+# conky pinned to a stale head. Re-pin once after the layout has had time
+# to settle.
+(
+    sleep "$SETTLE_RECHECK_DELAY"
+    restart_conky
+) &
 
 while true; do
     gdbus monitor --session \
