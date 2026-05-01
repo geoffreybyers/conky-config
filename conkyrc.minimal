@@ -19,7 +19,7 @@ conky.config = {
     own_window_argb_value = 0,
     own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
 
-    xinerama_head = 0,
+    xinerama_head = tonumber(os.getenv("CONKY_HEAD") or "0"),
 
     alignment = 'top_right',
     gap_x = 20,

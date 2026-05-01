@@ -30,8 +30,9 @@ conky.config = {
     own_window_argb_value = 0,
     own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
 
-    -- Monitor selection (0 = primary). `xrandr` lists heads.
-    xinerama_head = 0,
+    -- Monitor selection. Set via $CONKY_HEAD env var so a wrapper can
+    -- pin to a named output (e.g. DP-2) instead of a fragile index.
+    xinerama_head = tonumber(os.getenv("CONKY_HEAD") or "0"),
 
     -- Positioning
     alignment = 'top_right',
