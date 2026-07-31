@@ -102,5 +102,4 @@ ${color1}Upload ${alignr}${upspeedf enp41s0} KiB/s
 ${upspeedgraph enp41s0 30,}
 ${color1}Local IP${alignr}${addrs enp41s0}
 ${color1}Public IP${alignr}${execi 3600 curl -s --connect-timeout 5 http://checkip.amazonaws.com}
-${color1}Location${alignr}${execi 3600 curl -s --connect-timeout 5 ipinfo.io/city}
 ]]

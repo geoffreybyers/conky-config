@@ -101,11 +101,11 @@ systems, but you can also comment the lines out if you don't want them.
 Default is `Ubuntu Mono:size=10`. Install with `sudo apt install fonts-ubuntu`,
 or swap the `font = ` line for `DejaVu Sans Mono`, `Fira Code`, etc.
 
-### 7. Public IP / location
+### 7. Public IP
 
-The last two lines hit `checkip.amazonaws.com` and `ipinfo.io/city` once an
-hour. Harmless, but if you screenshot your desktop a lot or don't want the
-outbound pings, just delete those two lines.
+The last line hits `checkip.amazonaws.com` once an hour. Harmless, but if you
+screenshot your desktop a lot or don't want the outbound ping, just delete that
+line.
 
 ## Troubleshooting
 
